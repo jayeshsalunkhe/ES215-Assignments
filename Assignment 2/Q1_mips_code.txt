@@ -1,0 +1,57 @@
+# We will use temp registers to store our values. 
+
+# Here we are assuming that array A is stored and we are given the address of the array. 
+
+    # $t0 - index
+    # $t1 - num
+    # $t2 - count
+    # $t3 - sum
+    # $t4 - min
+    # $t5 - max
+    # $s7 - starting address of the array A. 
+
+
+
+Funct: 
+start:
+    # Initialise to default values( 0 )
+    lw $t0, 0($s7 )         	# sets index to Address of array A
+    lw $t1, 0($zero )         	# sets input num to 0
+    lw $t2, 0($zero )         	# sets count to 0
+    lw $t3, 0($zero )         	# sets sum to 0
+    lw $t4, 0($t0 )        	# sets min to 1st element
+    lw $t5, 0($t0 )        	# sets max to 0
+
+loop:
+    beq $t2, 100, exit_loop	# exit after 100 iterations to calculate avg
+    lw $t1, 0($t0)		# load the value from memory
+
+increment: 
+    addi $t0, $t0, 4 		# increment address to next 
+    addi $t2, $t2, 2		# increment count to next by 1
+
+    addi $t3, $t3, $t1 		# update sum
+    blt $t1, #t5, min		# go to min subbranch that is t1 > t5
+    move $t5, $t1 		# update max element
+
+min:
+    bgt $t1, $t4, endloop	#check for max
+    move $t4, $t1		# update max
+
+end_loop:
+    j loop
+
+exit_loop:
+    div.s $t6, $t3, $t2 	# floating point operation $t6 conatians result ( float)
+
+
+    # save Outputs
+    move $s0 , $t5		# save max value to saved register s0
+    move $s1, $t4		# save min value to saved register s1
+    move $s2, $t6		# save avg value to saved register s3
+
+    end_Funct: 
+
+# References: 
+    1) http://www.cim.mcgill.ca/~langer/273/12-notes.pdf
+    2) MIPS_Vol1.pdf
